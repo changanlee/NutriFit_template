@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriFit 原型界面</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .screens-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .screen {
+            width: 320px;
+            height: 640px;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            border: 10px solid #333;
+            border-top-width: 40px;
+            border-bottom-width: 40px;
+        }
+        
+        .screen::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 10px;
+            background-color: #222;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
+        
+        .screen::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #222;
+        }
+        
+        .screen-content {
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .screen-title {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        /* 歡迎/登入界面 */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .logo {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-text {
+            margin-bottom: 40px;
+        }
+        
+        .auth-buttons {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background-color: white;
+            color: #185a9d;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 初始偏好調查界面 */
+        .preference-survey {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .restaurant-card {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .restaurant-image {
+            width: 100%;
+            height: 60%;
+            object-fit: cover;
+        }
+        
+        .restaurant-info {
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .restaurant-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .restaurant-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .restaurant-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+        }
+        
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .like-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .skip-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: #e0e0e0;
+            margin-top: auto;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 40%;
+            background-color: #4CAF50;
+        }
+        
+        /* 主頁/推薦界面 */
+        .home-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-bar {
+            padding: 15px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-input i {
+            color: #666;
+        }
+        
+        .search-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .filter-option {
+            padding: 5px 15px;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .filter-option.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .recommendation-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .recommendation-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .recommendation-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .recommendation-content {
+            padding: 15px;
+        }
+        
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .recommendation-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFC107;
+        }
+        
+        .recommendation-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .recommendation-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .price-info {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .calorie-info {
+            color: #FF9800;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .nav-item.active {
+            color: #4CAF50;
+        }
+        
+        /* 餐廳詳情界面 */
+        .restaurant-detail {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-header {
+            position: relative;
+            height: 200px;
+        }
+        
+        .detail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .favorite-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f44336;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .detail-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .detail-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-rating i {
+            color: #FFC107;
+        }
+        
+        .detail-info {
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-name {
+            font-weight: bold;
+        }
+        
+        .menu-price {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .menu-calorie {
+            font-size: 12px;
+            color: #FF9800;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-bar .btn {
+            flex: 1;
+        }
+        
+        /* 收藏餐廳界面 */
+        .favorites-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .favorites-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .favorites-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .favorites-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        /* 財務管理界面 */
+        .finance-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .finance-tabs {
+            display: flex;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .finance-tab {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .finance-tab.active {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+        }
+        
+        .finance-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .budget-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .budget-title {
+            font-weight: bold;
+        }
+        
+        .budget-edit {
+            color: #4CAF50;
+        }
+        
+        .budget-progress {
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .budget-bar {
+            height: 100%;
+            width: 70%;
+            background-color: #4CAF50;
+        }
+        
+        .budget-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .expense-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .expense-list {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .expense-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .expense-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #4CAF50;
+        }
+        
+        .expense-details {
+            flex: 1;
+        }
+        
+        .expense-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .expense-date {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .expense-amount {
+            font-weight: bold;
+            color: #f44336;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-placeholder {
+            color: #666;
+            text-align: center;
+        }
+        
+        /* 卡路里管理界面 */
+        .calorie-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .calorie-header {
+            background-color: white;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .calorie-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 15px solid #f0f0f0;
+            border-top-color: #4CAF50;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .calorie-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .calorie-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .calorie-summary {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .calorie-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .meal-section {
+            margin-bottom: 20px;
+        }
+        
+        .meal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .meal-title {
+            font-weight: bold;
+        }
+        
+        .meal-add {
+            color: #4CAF50;
+        }
+        
+        .meal-items {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .meal-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .meal-details {
+            flex: 1;
+        }
+        
+        .meal-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .meal-restaurant {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .meal-calorie {
+            font-weight: bold;
+            color: #FF9800;
+        }
+        
+        /* 個人資料/設定界面 */
+        .profile-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .profile-header {
+            background-color: #4CAF50;
+            padding: 30px 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: white;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #4CAF50;
+        }
+        
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .profile-email {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .profile-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .settings-list {
+            background-color: white;
+            margin: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .settings-icon {
+            width: 40px;
+            color: #4CAF50;
+            font-size: 18px;
+        }
+        
+        .settings-text {
+            flex: 1;
+        }
+        
+        .settings-arrow {
+            color: #ccc;
+        }
+        
+        .logout-button {
+            margin: 20px;
+            padding: 15px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* 卡路里設定界面 */
+        .calorie-settings-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .settings-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .settings-card div {
+            margin-bottom: 15px;
+        }
+        
+        .settings-card div:last-child {
+            margin-bottom: 0;
+        }
+        
+        .activity-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .activity-option {
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            margin-right: 10px;
+        }
+        
+        .option-radio:checked {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        .goal-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .goal-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px 10px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        
+        .health-app-connections {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .connection-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .connection-item:last-child {
+            border-bottom: none;
+        }
+        
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+        
+        .toggle-switch label {
+            width: 50px;
+            height: 28px;
+            background-color: #ddd;
+            border-radius: 14px;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .toggle-switch label::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch input[type="checkbox"]:checked + label {
+            background-color: #4CAF50;
+        }
+        
+        .toggle-switch input[type="checkbox"]:checked + label::before {
+            transform: translateX(22px);
+        }
+        
+        /* 添加共用樣式類，減少內聯樣式重複 */
+        .mode-card {
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .mode-btn {
+            text-align: center;
+            padding: 15px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 2px 8px rgba(76,175,80,0.3);
+        }
+        
+        .mode-btn:not(.active) {
+            background-color: white;
+            color: #666;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+        
+        .custom-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+            margin: 10px 0;
+        }
+        
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* 添加顯示與隱藏的類 */
+        .mode-input {
+            display: none;
+        }
+        
+        .mode-input.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NutriFit 應用程式原型界面</h1>
+        
+        <div class="screens-container">
+            <!-- 歡迎/登入界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="welcome-screen">
+                        <div class="logo">
+                            <i class="fas fa-utensils"></i> NutriFit
+                        </div>
+                        <div class="welcome-text">
+                            <h2>歡迎使用 NutriFit</h2>
+                            <p>智慧餐廳推薦與健康管理</p>
+                        </div>
+                        <div class="auth-buttons">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-envelope"></i> 電子郵件登入
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fab fa-google"></i> Google 登入
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fab fa-facebook"></i> Facebook 登入
+                            </button>
+                            <p style="margin-top: 20px; font-size: 14px;">還沒有帳號？ <a href="#" style="color: white; font-weight: bold;">立即註冊</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 初始偏好調查界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="screen-title">初始偏好調查</div>
+                    <div class="preference-survey">
+                        <div class="restaurant-card">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="restaurant-image">
+                            <div class="restaurant-info">
+                                <div class="restaurant-name">鮮味海鮮餐廳</div>
+                                <div class="restaurant-details">台北市信義區松仁路 100 號 • 距離 0.5 公里</div>
+                                <div class="restaurant-tags">
+                                    <span class="tag">海鮮</span>
+                                    <span class="tag">中式料理</span>
+                                    <span class="tag">$$</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn skip-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="action-btn like-btn">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 主頁/推薦界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="home-screen">
+                        <div class="screen-title">餐廳搜尋</div>
+                        <div style="flex: 1; padding: 15px; overflow-y: auto;">
+                            <!-- 位置輸入區域 -->
+                            <div class="form-group">
+                                <label class="form-label">您的位置</label>
+                                <div class="form-input" style="display: flex; align-items: center; background: white; padding: 12px 15px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-map-marker-alt" style="color: #4CAF50; margin-right: 10px; font-size: 18px;"></i>
+                                    <input type="text" style="border: none; flex: 1; outline: none; font-size: 15px;" placeholder="輸入地址或使用當前位置" value="台北市信義區">
+                                    <i class="fas fa-crosshairs" style="color: #666; margin-left: 10px; cursor: pointer; font-size: 18px; padding: 5px;"></i>
+                            </div>
+                        </div>
+                            
+                            <!-- 交通/距離模式選擇 -->
+                            <div class="form-group" style="margin-top: 25px;">
+                                <label class="form-label" style="font-weight: 500; margin-bottom: 12px; display: block;">選擇距離模式</label>
+                                <div class="travel-mode-container" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <!-- 智能選擇模式 -->
+                                    <div class="travel-mode mode-btn active" style="width: 100%; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+                                        <i class="fas fa-magic" style="font-size: 22px;"></i>
+                                        <div style="text-align: left;">
+                                            <div style="font-size: 14px; font-weight: bold;">智能選擇</div>
+                                            <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">自動配合您的時間與環境選擇最佳距離</div>
+                        </div>
+                                        </div>
+                                    
+                                    <div style="display: flex; gap: 10px;">
+                                        <div class="travel-mode mode-btn" style="flex: 1;">
+                                            <i class="fas fa-ruler" style="font-size: 22px; margin-bottom: 8px;"></i>
+                                            <div style="font-size: 14px; font-weight: bold;">距離</div>
+                                    </div>
+                                        <div class="travel-mode mode-btn" style="flex: 1;">
+                                            <i class="fas fa-walking" style="font-size: 22px; margin-bottom: 8px;"></i>
+                                            <div style="font-size: 14px; font-weight: bold;">走路</div>
+                                    </div>
+                                        <div class="travel-mode mode-btn" style="flex: 1;">
+                                            <i class="fas fa-car" style="font-size: 22px; margin-bottom: 8px;"></i>
+                                            <div style="font-size: 14px; font-weight: bold;">開車</div>
+                                    </div>
+                                        <div class="travel-mode mode-btn" style="flex: 1;">
+                                            <i class="fas fa-motorcycle" style="font-size: 22px; margin-bottom: 8px;"></i>
+                                            <div style="font-size: 14px; font-weight: bold;">外送</div>
+                                </div>
+                            </div>
+                                        </div>
+                                    </div>
+                            
+                            <!-- 智能選擇模式輸入（預設顯示） -->
+                            <div id="smart-input" class="mode-input mode-card active">
+                                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                                    <div style="width: 40px; height: 40px; background-color: #e8f5e9; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-lightbulb" style="color: #4CAF50; font-size: 20px;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 500; margin-bottom: 5px;">目前智能模式為您準備</div>
+                                        <div style="font-size: 14px; color: #666; line-height: 1.5;">
+                                            <span style="font-weight: 500; color: #4CAF50;">午餐時段</span>，建議距離 <span style="font-weight: 500; color: #4CAF50;">1公里</span> 內的餐廳
+                                            <div style="margin-top: 8px;">選擇其他模式可自行調整距離範圍</div>
+                                    </div>
+                                </div>
+                            </div>
+                                        </div>
+                            
+                            <!-- 距離模式輸入 -->
+                            <div id="distance-input" class="mode-input mode-card">
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="font-size: 15px; color: #555; font-weight: 500;">
+                                        選擇方圓半徑範圍
+                                    </div>
+                                    <div class="slider-value" style="font-weight: bold; color: #4CAF50; font-size: 16px;">
+                                        500 米
+                                    </div>
+                                    </div>
+                                <input type="range" min="100" max="5000" value="500" step="100" class="custom-slider" data-unit="米">
+                                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #999;">
+                                    <span>100米</span>
+                                    <span>1公里</span>
+                                    <span>3公里</span>
+                                    <span>5公里</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 走路模式輸入 -->
+                            <div id="walking-input" class="mode-input mode-card">
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="font-size: 15px; color: #555; font-weight: 500;">
+                                        步行時間範圍
+                        </div>
+                                    <div class="slider-value" style="font-weight: bold; color: #4CAF50; font-size: 16px;">
+                                        10 分鐘
+                                    </div>
+                                </div>
+                                <input type="range" min="5" max="30" value="10" step="5" class="custom-slider" data-unit="分鐘">
+                                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #999;">
+                                    <span>5分鐘</span>
+                                    <span>10分鐘</span>
+                                    <span>20分鐘</span>
+                                    <span>30分鐘</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 開車模式輸入 -->
+                            <div id="driving-input" class="mode-input mode-card">
+                                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="font-size: 15px; color: #555; font-weight: 500;">
+                                        駕駛時間範圍
+                                    </div>
+                                    <div class="slider-value" style="font-weight: bold; color: #4CAF50; font-size: 16px;">
+                                        15 分鐘
+                                    </div>
+                                </div>
+                                <input type="range" min="5" max="60" value="15" step="5" class="custom-slider" data-unit="分鐘">
+                                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: #999;">
+                                    <span>5分鐘</span>
+                                    <span>20分鐘</span>
+                                    <span>40分鐘</span>
+                                    <span>60分鐘</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 外送模式輸入 -->
+                            <div id="delivery-input" class="mode-input mode-card">
+                                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <div style="flex: 1; font-size: 15px; color: #555; font-weight: 500;">
+                                        僅顯示提供外送服務的餐廳
+                                    </div>
+                                    <div style="width: 50px; height: 28px; background-color: #4CAF50; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                        <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; right: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                    </div>
+                                </div>
+                                <div style="font-size: 15px; color: #555; font-weight: 500; margin-bottom: 12px;">選擇外送平台</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <div class="delivery-option active" style="padding: 10px 15px; border-radius: 16px; background-color: #4CAF50; color: white; font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(76,175,80,0.2);">
+                                        <img src="https://via.placeholder.com/20" style="width: 20px; height: 20px; border-radius: 50%;">
+                                        <span>Uber Eats</span>
+                                    </div>
+                                    <div class="delivery-option active" style="padding: 10px 15px; border-radius: 16px; background-color: #4CAF50; color: white; font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(76,175,80,0.2);">
+                                        <img src="https://via.placeholder.com/20" style="width: 20px; height: 20px; border-radius: 50%;">
+                                        <span>Foodpanda</span>
+                                    </div>
+                                    <div class="delivery-option" style="padding: 10px 15px; border-radius: 16px; background-color: #f5f5f5; font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                        <img src="https://via.placeholder.com/20" style="width: 20px; height: 20px; border-radius: 50%;">
+                                        <span>自有外送</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 搜尋按鈕部分 -->
+                            <div style="padding: 8px 0; margin-top: 25px;">
+                                <button class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 16px; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); border-radius: 12px; background-color: #4CAF50; color: white; border: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="fas fa-search" style="font-size: 18px;"></i> 
+                                    <span style="font-weight: bold;">尋找餐廳</span>
+                                </button>
+                            </div>
+                            
+                            <!-- 餐廳結果預覽區 -->
+                            <div style="margin-top: 25px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <div style="font-weight: 500; font-size: 16px;">推薦餐廳</div>
+                                    <div style="color: #4CAF50; font-size: 14px; cursor: pointer;">查看全部</div>
+                                </div>
+                                
+                                <div style="overflow-x: auto; white-space: nowrap; padding: 5px 0;">
+                                    <div style="display: inline-block; width: 160px; margin-right: 12px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white;">
+                                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" style="width: 100%; height: 120px; object-fit: cover;">
+                                        <div style="padding: 10px;">
+                                            <div style="font-weight: bold; font-size: 14px; white-space: normal;">義式風味披薩</div>
+                                            <div style="display: flex; align-items: center; margin-top: 5px; font-size: 12px; color: #666;">
+                                                <i class="fas fa-map-marker-alt" style="color: #999; margin-right: 5px; font-size: 10px;"></i>
+                                                <span>0.3公里</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: inline-block; width: 160px; margin-right: 12px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white;">
+                                        <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" style="width: 100%; height: 120px; object-fit: cover;">
+                                        <div style="padding: 10px;">
+                                            <div style="font-weight: bold; font-size: 14px; white-space: normal;">日式拉麵專門店</div>
+                                            <div style="display: flex; align-items: center; margin-top: 5px; font-size: 12px; color: #666;">
+                                                <i class="fas fa-map-marker-alt" style="color: #999; margin-right: 5px; font-size: 10px;"></i>
+                                                <span>0.4公里</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: inline-block; width: 160px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white;">
+                                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" style="width: 100%; height: 120px; object-fit: cover;">
+                                        <div style="padding: 10px;">
+                                            <div style="font-weight: bold; font-size: 14px; white-space: normal;">健康蔬食沙拉</div>
+                                            <div style="display: flex; align-items: center; margin-top: 5px; font-size: 12px; color: #666;">
+                                                <i class="fas fa-map-marker-alt" style="color: #999; margin-right: 5px; font-size: 10px;"></i>
+                                                <span>0.5公里</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 底部導航欄 -->
+                        <div class="bottom-nav">
+                            <div class="nav-item active">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 餐廳詳情界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="restaurant-detail">
+                        <div class="detail-header">
+                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="detail-image">
+                            <div class="back-button">
+                                <i class="fas fa-arrow-left"></i>
+                            </div>
+                            <div class="favorite-button">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-title">義式風味披薩</div>
+                            <div class="detail-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span>4.8 (120+ 評價)</span>
+                            </div>
+                            <div class="detail-info">
+                                <div class="info-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>台北市大安區復興南路 50 號</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>02-2345-6789</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>11:00 - 21:00 (週一公休)</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span>$$ • 平均 $350/人</span>
+                                </div>
+                            </div>
+                            <div class="detail-section">
+                                <div class="section-title">推薦菜品</div>
+                                <div class="menu-items">
+                                    <div class="menu-item">
+                                        <div>
+                                            <div class="menu-name">瑪格麗特披薩</div>
+                                            <div class="menu-calorie">約 550 卡路里</div>
+                                        </div>
+                                        <div class="menu-price">$280</div>
+                                    </div>
+                                    <div class="menu-item">
+                                        <div>
+                                            <div class="menu-name">海鮮總匯披薩</div>
+                                            <div class="menu-calorie">約 680 卡路里</div>
+                                        </div>
+                                        <div class="menu-price">$380</div>
+                                    </div>
+                                    <div class="menu-item">
+                                        <div>
+                                            <div class="menu-name">田園蔬菜沙拉</div>
+                                            <div class="menu-calorie">約 220 卡路里</div>
+                                        </div>
+                                        <div class="menu-price">$180</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-map-marked-alt"></i> 導航前往
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-receipt"></i> 記錄消費
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 收藏餐廳界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="screen-title">我的收藏</div>
+                    <div class="favorites-screen">
+                        <div class="favorites-list">
+                            <div class="recommendation-card">
+                                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="recommendation-image">
+                                <div class="recommendation-content">
+                                    <div class="recommendation-header">
+                                        <div class="recommendation-name">義式風味披薩</div>
+                                        <div class="recommendation-rating">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.8</span>
+                                        </div>
+                                    </div>
+                                    <div class="recommendation-info">
+                                        <div><i class="fas fa-map-marker-alt"></i> 台北市大安區復興南路 50 號</div>
+                                        <div><i class="fas fa-utensils"></i> 義式料理, 披薩</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="recommendation-card">
+                                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="recommendation-image">
+                                <div class="recommendation-content">
+                                    <div class="recommendation-header">
+                                        <div class="recommendation-name">日式拉麵專門店</div>
+                                        <div class="recommendation-rating">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.6</span>
+                                        </div>
+                                    </div>
+                                    <div class="recommendation-info">
+                                        <div><i class="fas fa-map-marker-alt"></i> 台北市中山區南京東路 120 號</div>
+                                        <div><i class="fas fa-utensils"></i> 日式料理, 拉麵</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item active">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 財務管理界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="finance-screen">
+                        <div class="finance-tabs">
+                            <div class="finance-tab active">預算</div>
+                            <div class="finance-tab">記帳</div>
+                            <div class="finance-tab">記錄</div>
+                            <div class="finance-tab">分析</div>
+                        </div>
+                        <div class="finance-content">
+                            <div class="budget-section">
+                                <div class="budget-header">
+                                    <div class="budget-title">本月餐飲預算</div>
+                                    <div class="budget-edit"><i class="fas fa-edit"></i></div>
+                                </div>
+                                <div class="budget-progress">
+                                    <div class="budget-bar"></div>
+                                </div>
+                                <div class="budget-info">
+                                    <div>已使用: $3,500</div>
+                                    <div>預算: $5,000</div>
+                                </div>
+                            </div>
+                            <div class="budget-section">
+                                <div class="budget-header">
+                                    <div class="budget-title">今日餐飲預算</div>
+                                    <div class="budget-edit"><i class="fas fa-edit"></i></div>
+                                </div>
+                                <div class="budget-progress">
+                                    <div class="budget-bar" style="width: 40%;"></div>
+                                </div>
+                                <div class="budget-info">
+                                    <div>已使用: $120</div>
+                                    <div>預算: $300</div>
+                                </div>
+                            </div>
+                            <div class="expense-form">
+                                <div class="form-group">
+                                    <label class="form-label">餐廳名稱</label>
+                                    <input type="text" class="form-input" placeholder="輸入餐廳名稱">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">消費金額</label>
+                                    <input type="number" class="form-input" placeholder="輸入金額">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">消費日期</label>
+                                    <input type="date" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">備註</label>
+                                    <input type="text" class="form-input" placeholder="輸入備註">
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;">
+                                    新增消費記錄
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item active">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 消費記錄界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="finance-screen">
+                        <div class="finance-tabs">
+                            <div class="finance-tab">預算</div>
+                            <div class="finance-tab">記帳</div>
+                            <div class="finance-tab active">記錄</div>
+                            <div class="finance-tab">分析</div>
+                        </div>
+                        <div class="finance-content">
+                            <div class="expense-list">
+                                <div class="expense-item">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <div class="expense-name">義式風味披薩</div>
+                                        <div class="expense-date">2023/06/15 12:30</div>
+                                    </div>
+                                    <div class="expense-amount">$380</div>
+                                </div>
+                                <div class="expense-item">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <div class="expense-name">日式拉麵專門店</div>
+                                        <div class="expense-date">2023/06/14 18:45</div>
+                                    </div>
+                                    <div class="expense-amount">$280</div>
+                                </div>
+                                <div class="expense-item">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <div class="expense-name">健康蔬食沙拉</div>
+                                        <div class="expense-date">2023/06/13 12:15</div>
+                                    </div>
+                                    <div class="expense-amount">$250</div>
+                                </div>
+                                <div class="expense-item">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <div class="expense-name">鮮味海鮮餐廳</div>
+                                        <div class="expense-date">2023/06/12 19:30</div>
+                                    </div>
+                                    <div class="expense-amount">$520</div>
+                                </div>
+                                <div class="expense-item">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <div class="expense-name">泰式料理</div>
+                                        <div class="expense-date">2023/06/10 18:00</div>
+                                    </div>
+                                    <div class="expense-amount">$320</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item active">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 消費分析界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="finance-screen">
+                        <div class="finance-tabs">
+                            <div class="finance-tab">預算</div>
+                            <div class="finance-tab">記帳</div>
+                            <div class="finance-tab">記錄</div>
+                            <div class="finance-tab active">分析</div>
+                        </div>
+                        <div class="finance-content">
+                            <div class="chart-container">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-pie" style="font-size: 40px; margin-bottom: 10px;"></i>
+                                    <div>餐飲消費類型分布</div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line" style="font-size: 40px; margin-bottom: 10px;"></i>
+                                    <div>每月餐飲消費趨勢</div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-bar" style="font-size: 40px; margin-bottom: 10px;"></i>
+                                    <div>每週餐飲消費分布</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item active">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 卡路里管理界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="screen-title">卡路里管理</div>
+                    <div class="calorie-screen">
+                        <div class="calorie-header" style="padding: 15px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                <div class="calorie-circle" style="width: 100px; height: 100px; margin: 0 15px 0 0;">
+                                <div class="calorie-value">1,250</div>
+                                    <div class="calorie-label">已攝取</div>
+                            </div>
+                                <div style="flex: 1;">
+                                    <div class="summary-item" style="margin-bottom: 10px; text-align: left;">
+                                        <div class="summary-label" style="margin-bottom: 5px;">目標卡路里</div>
+                                        <div class="summary-value">2,000 卡</div>
+                                </div>
+                                    <div class="summary-item" style="text-align: left;">
+                                        <div class="summary-label" style="margin-bottom: 5px;">剩餘卡路里</div>
+                                        <div class="summary-value" style="color: #4CAF50;">750 卡</div>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="budget-progress" style="height: 8px; background-color: #f0f0f0; border-radius: 4px; margin: 5px 0;">
+                                <div class="budget-bar" style="width: 62.5%; background-color: #4CAF50; height: 100%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="calorie-content">
+                            <div class="meal-section">
+                                <div class="meal-header">
+                                    <div class="meal-title">早餐</div>
+                                    <div class="meal-add"><i class="fas fa-plus"></i> 新增</div>
+                                </div>
+                                <div class="meal-items">
+                                    <div class="meal-item">
+                                        <div class="meal-details">
+                                            <div class="meal-name">全麥三明治</div>
+                                            <div class="meal-restaurant">健康早餐店</div>
+                                        </div>
+                                        <div class="meal-calorie">320 卡</div>
+                                    </div>
+                                    <div class="meal-item">
+                                        <div class="meal-details">
+                                            <div class="meal-name">鮮榨柳橙汁</div>
+                                            <div class="meal-restaurant">健康早餐店</div>
+                                        </div>
+                                        <div class="meal-calorie">120 卡</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meal-section">
+                                <div class="meal-header">
+                                    <div class="meal-title">午餐</div>
+                                    <div class="meal-add"><i class="fas fa-plus"></i> 新增</div>
+                                </div>
+                                <div class="meal-items">
+                                    <div class="meal-item">
+                                        <div class="meal-details">
+                                            <div class="meal-name">日式拉麵</div>
+                                            <div class="meal-restaurant">日式拉麵專門店</div>
+                                        </div>
+                                        <div class="meal-calorie">550 卡</div>
+                                    </div>
+                                    <div class="meal-item">
+                                        <div class="meal-details">
+                                            <div class="meal-name">綠茶</div>
+                                            <div class="meal-restaurant">日式拉麵專門店</div>
+                                        </div>
+                                        <div class="meal-calorie">0 卡</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meal-section">
+                                <div class="meal-header">
+                                    <div class="meal-title">晚餐</div>
+                                    <div class="meal-add"><i class="fas fa-plus"></i> 新增</div>
+                                </div>
+                                <div class="meal-items">
+                                    <div class="meal-item">
+                                        <div class="meal-details">
+                                            <div class="meal-name">田園蔬菜沙拉</div>
+                                            <div class="meal-restaurant">健康蔬食沙拉</div>
+                                        </div>
+                                        <div class="meal-calorie">220 卡</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="meal-section">
+                                <div class="meal-header">
+                                    <div class="meal-title">點心</div>
+                                    <div class="meal-add"><i class="fas fa-plus"></i> 新增</div>
+                                </div>
+                                <div class="meal-items">
+                                    <div class="meal-item">
+                                        <div class="meal-details">
+                                            <div class="meal-name">水果優格</div>
+                                            <div class="meal-restaurant">自製</div>
+                                        </div>
+                                        <div class="meal-calorie">150 卡</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 卡路里設定界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="screen-title">卡路里設定</div>
+                    <div class="calorie-settings-screen" style="height: 100%; display: flex; flex-direction: column;">
+                        <div style="flex: 1; padding: 15px; overflow-y: auto;">
+                            <!-- 目標卡路里設定 -->
+                            <div class="settings-card" style="background-color: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="font-weight: bold; margin-bottom: 15px; font-size: 16px;">每日卡路里目標</div>
+                                <div style="text-align: center; margin: 20px 0;">
+                                    <div style="font-size: 30px; font-weight: bold; color: #4CAF50;">2000</div>
+                                    <div style="color: #666; font-size: 14px;">卡路里/天</div>
+                                </div>
+                                <div class="slider-container" style="margin: 15px 0;">
+                                    <input type="range" min="1000" max="3000" value="2000" class="slider" style="width: 100%; margin-bottom: 10px;">
+                                    <div style="display: flex; justify-content: space-between; color: #666; font-size: 12px;">
+                                        <span>1000</span>
+                                        <span>1500</span>
+                                        <span>2000</span>
+                                        <span>2500</span>
+                                        <span>3000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 活動水平選擇 -->
+                            <div class="settings-card" style="background-color: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="font-weight: bold; margin-bottom: 15px; font-size: 16px;">活動水平</div>
+                                <div class="activity-options" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div class="activity-option" style="padding: 12px; border-radius: 8px; display: flex; align-items: center; background-color: #f0f0f0; border: 1px solid #ddd;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">久坐不動</div>
+                                            <div style="font-size: 12px; color: #666;">每天很少或沒有運動</div>
+                                </div>
+                                        <div class="option-radio" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ddd;"></div>
+                            </div>
+                                    <div class="activity-option" style="padding: 12px; border-radius: 8px; display: flex; align-items: center; background-color: #f0f0f0; border: 1px solid #ddd;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">輕度活動</div>
+                                            <div style="font-size: 12px; color: #666;">每周1-3天輕度運動</div>
+                                </div>
+                                        <div class="option-radio" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ddd;"></div>
+                            </div>
+                                    <div class="activity-option" style="padding: 12px; border-radius: 8px; display: flex; align-items: center; background-color: #e8f5e9; border: 1px solid #4CAF50;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">中度活動</div>
+                                            <div style="font-size: 12px; color: #666;">每周3-5天中度運動</div>
+                                        </div>
+                                        <div class="option-radio" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #4CAF50; background-color: #4CAF50;"></div>
+                                        </div>
+                                    <div class="activity-option" style="padding: 12px; border-radius: 8px; display: flex; align-items: center; background-color: #f0f0f0; border: 1px solid #ddd;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">高度活動</div>
+                                            <div style="font-size: 12px; color: #666;">每周5-7天劇烈運動</div>
+                                    </div>
+                                        <div class="option-radio" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ddd;"></div>
+                                        </div>
+                                    <div class="activity-option" style="padding: 12px; border-radius: 8px; display: flex; align-items: center; background-color: #f0f0f0; border: 1px solid #ddd;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">極高活動</div>
+                                            <div style="font-size: 12px; color: #666;">每天劇烈運動或體力勞動</div>
+                                        </div>
+                                        <div class="option-radio" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ddd;"></div>
+                                    </div>
+                                        </div>
+                                        </div>
+                            
+                            <!-- 健身目標選擇 -->
+                            <div class="settings-card" style="background-color: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="font-weight: bold; margin-bottom: 15px; font-size: 16px;">健身目標</div>
+                                <div class="goal-options" style="display: flex; justify-content: space-between; gap: 10px;">
+                                    <div class="goal-option" style="flex: 1; text-align: center; padding: 15px 10px; border-radius: 8px; background-color: #f0f0f0; border: 1px solid #ddd;">
+                                        <i class="fas fa-weight" style="font-size: 24px; margin-bottom: 8px; color: #666;"></i>
+                                        <div style="font-weight: bold; font-size: 14px;">減重</div>
+                                    </div>
+                                    <div class="goal-option" style="flex: 1; text-align: center; padding: 15px 10px; border-radius: 8px; background-color: #e8f5e9; border: 1px solid #4CAF50;">
+                                        <i class="fas fa-balance-scale" style="font-size: 24px; margin-bottom: 8px; color: #4CAF50;"></i>
+                                        <div style="font-weight: bold; font-size: 14px;">維持體重</div>
+                                </div>
+                                    <div class="goal-option" style="flex: 1; text-align: center; padding: 15px 10px; border-radius: 8px; background-color: #f0f0f0; border: 1px solid #ddd;">
+                                        <i class="fas fa-dumbbell" style="font-size: 24px; margin-bottom: 8px; color: #666;"></i>
+                                        <div style="font-weight: bold; font-size: 14px;">增肌</div>
+                            </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 連接健康應用 -->
+                            <div class="settings-card" style="background-color: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="font-weight: bold; margin-bottom: 15px; font-size: 16px;">連接健康應用</div>
+                                <div class="health-app-connections">
+                                    <div class="connection-item" style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-heartbeat" style="color: #ff3b30; font-size: 20px;"></i>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">Apple Health</div>
+                                            <div style="font-size: 12px; color: #666;">自動同步活動和卡路里數據</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <div style="width: 50px; height: 28px; background-color: #4CAF50; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                                <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; right: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="connection-item" style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-running" style="color: #4285f4; font-size: 20px;"></i>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">Google Fit</div>
+                                            <div style="font-size: 12px; color: #666;">自動同步活動和卡路里數據</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <div style="width: 50px; height: 28px; background-color: #ddd; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                                <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="connection-item" style="display: flex; align-items: center; padding: 12px 0;">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-shoe-prints" style="color: #1e88e5; font-size: 20px;"></i>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">Fitbit</div>
+                                            <div style="font-size: 12px; color: #666;">自動同步活動和卡路里數據</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <div style="width: 50px; height: 28px; background-color: #ddd; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                                <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; left: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 底部保存按鈕 -->
+                        <div style="padding: 15px; background-color: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.1);">
+                            <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-save" style="margin-right: 8px;"></i> 儲存設定
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 個人資料/設定界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="profile-screen">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="profile-name">王小明</div>
+                            <div class="profile-email">wang@example.com</div>
+                        </div>
+                        <div class="profile-content">
+                            <div class="settings-list">
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-user-edit"></i>
+                                    </div>
+                                    <div class="settings-text">編輯個人資料</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <div class="settings-text">預算設定</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                    <div class="settings-text">卡路里設定</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <!-- 添加自動推薦設定項 -->
+                                <div class="settings-item" style="background-color: #e8f5e9;">
+                                    <div class="settings-icon" style="color: #4CAF50;">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="settings-text">自動推薦設定</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-list">
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="settings-text">通知設定</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <div class="settings-text">語言設定</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="settings-text">隱私設定</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-list">
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-question-circle"></i>
+                                    </div>
+                                    <div class="settings-text">幫助與支援</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div class="settings-text">關於 NutriFit</div>
+                                    <div class="settings-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="logout-button">
+                                登出
+                            </div>
+                        </div>
+                        <div class="bottom-nav">
+                            <div class="nav-item">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item active">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自動推薦通知界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div class="notification-screen" style="height: 100%; display: flex; flex-direction: column; background-color: #f9f9f9;">
+                        <div class="screen-title" style="position: relative;">
+                            餐廳推薦通知
+                            <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 20px; color: white; cursor: pointer;">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                                        </div>
+                        
+                        <!-- 頂部通知部分 -->
+                        <div style="padding: 20px; text-align: center; background-color: white; margin: 15px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <div style="background-color: #e8f5e9; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                                <i class="fas fa-bell" style="font-size: 35px; color: #4CAF50;"></i>
+                                    </div>
+                            <h3 style="margin: 0 0 5px; font-size: 18px; color: #333;">午餐時間到了！</h3>
+                            <p style="color: #666; margin: 0 0 10px; font-size: 14px;">根據您的偏好，為您推薦以下餐廳</p>
+                            <div style="width: 50px; height: 3px; background-color: #f0f0f0; margin: 0 auto;"></div>
+                                    </div>
+                        
+                        <!-- 餐廳推薦卡片 -->
+                        <div style="flex: 1; padding: 0 15px; overflow-y: auto;">
+                            <div class="recommendation-card" style="background-color: white; border-radius: 15px; overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" style="width: 100%; height: 200px; object-fit: cover;">
+                                
+                                <div style="padding: 20px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                        <div style="font-size: 18px; font-weight: bold;">日式拉麵專門店</div>
+                                        <div style="display: flex; align-items: center; background-color: #FFF8E1; padding: 5px 10px; border-radius: 20px;">
+                                            <i class="fas fa-star" style="color: #FFC107; margin-right: 5px;"></i>
+                                            <span style="font-weight: bold;">4.6</span>
+                                    </div>
+                                </div>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px; color: #666;">
+                                            <i class="fas fa-map-marker-alt" style="width: 20px; color: #F44336; margin-right: 10px;"></i>
+                                            <span>台北市中山區南京東路 120 號 (距離 0.8 公里)</span>
+                            </div>
+                                        <div style="display: flex; align-items: center; margin-bottom: 8px; color: #666;">
+                                            <i class="fas fa-utensils" style="width: 20px; color: #9E9E9E; margin-right: 10px;"></i>
+                                            <span>日式料理, 拉麵</span>
+                            </div>
+                                        <div style="display: flex; align-items: center; color: #666;">
+                                            <i class="fas fa-clock" style="width: 20px; color: #4CAF50; margin-right: 10px;"></i>
+                                            <span>營業中 · 11:00-21:00</span>
+                                        </div>
+                                        </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; background-color: #f9f9f9; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                                        <div>
+                                            <div style="font-size: 13px; color: #666; margin-bottom: 3px;">平均消費</div>
+                                            <div style="font-weight: bold; color: #4CAF50;">$$ • $280/人</div>
+                                    </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 13px; color: #666; margin-bottom: 3px;">熱量參考</div>
+                                            <div style="font-weight: bold; color: #FF9800;"><i class="fas fa-fire" style="margin-right: 5px;"></i>約 550 卡</div>
+                                        </div>
+                                        </div>
+                                    
+                                    <div style="display: flex; gap: 10px;">
+                                        <button style="flex: 1; padding: 15px; background-color: #f5f5f5; color: #666; border: none; border-radius: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;">
+                                            <i class="fas fa-redo" style="margin-right: 8px;"></i> 換一家
+                                        </button>
+                                        <button style="flex: 1; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(76,175,80,0.3); cursor: pointer;">
+                                            <i class="fas fa-check" style="margin-right: 8px;"></i> 接受推薦
+                                        </button>
+                                    </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                        
+                        <!-- 底部導航欄 -->
+                        <div class="bottom-nav">
+                            <div class="nav-item active">
+                                <i class="fas fa-home"></i>
+                                <span>首頁</span>
+                                </div>
+                            <div class="nav-item">
+                                <i class="fas fa-heart"></i>
+                                <span>收藏</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-wallet"></i>
+                                <span>財務</span>
+                        </div>
+                            <div class="nav-item">
+                                <i class="fas fa-fire"></i>
+                                <span>卡路里</span>
+                            </div>
+                            <div class="nav-item">
+                                <i class="fas fa-user"></i>
+                                <span>我的</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自動推薦設定界面 -->
+            <div class="screen">
+                <div class="screen-content">
+                    <div style="height: 100%; display: flex; flex-direction: column; background-color: #f9f9f9;">
+                        <div class="screen-title" style="position: relative;">
+                            自動推薦設定
+                            <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 16px; color: white; cursor: pointer;">
+                                <i class="fas fa-arrow-left"></i>
+                                </div>
+                            </div>
+                        
+                        <div style="flex: 1; padding: 15px; overflow-y: auto;">
+                            <!-- 通知開關 -->
+                            <div style="background-color: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">自動推薦通知</div>
+                                        <div style="font-size: 14px; color: #666;">根據用餐時間自動推薦附近餐廳</div>
+                                    </div>
+                                    <div style="width: 50px; height: 28px; background-color: #4CAF50; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                        <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; right: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                </div>
+                            </div>
+                                    </div>
+                            
+                            <!-- 用餐時間設定 -->
+                            <div style="background-color: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                                <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">用餐時間設定</div>
+                                
+                                <div style="margin-bottom: 20px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 24px; height: 24px; background-color: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                                <i class="fas fa-coffee" style="color: #4CAF50; font-size: 12px;"></i>
+                                </div>
+                                            <span>早餐</span>
+                            </div>
+                                        <div style="display: flex; align-items: center; color: #4CAF50; font-weight: 500; background-color: #f5f5f5; padding: 8px 15px; border-radius: 20px; cursor: pointer;">
+                                            <span>07:30</span>
+                                            <i class="fas fa-chevron-right" style="margin-left: 8px; font-size: 12px;"></i>
+                                </div>
+                            </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 24px; height: 24px; background-color: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                                <i class="fas fa-sun" style="color: #4CAF50; font-size: 12px;"></i>
+                                    </div>
+                                            <span>午餐</span>
+                                </div>
+                                        <div style="display: flex; align-items: center; color: #4CAF50; font-weight: 500; background-color: #f5f5f5; padding: 8px 15px; border-radius: 20px; cursor: pointer;">
+                                            <span>12:00</span>
+                                            <i class="fas fa-chevron-right" style="margin-left: 8px; font-size: 12px;"></i>
+                            </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center;">
+                                            <div style="width: 24px; height: 24px; background-color: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                                <i class="fas fa-moon" style="color: #4CAF50; font-size: 12px;"></i>
+                                            </div>
+                                            <span>晚餐</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; color: #4CAF50; font-weight: 500; background-color: #f5f5f5; padding: 8px 15px; border-radius: 20px; cursor: pointer;">
+                                            <span>18:30</span>
+                                            <i class="fas fa-chevron-right" style="margin-left: 8px; font-size: 12px;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 15px; border-top: 1px solid #f0f0f0;">
+                                    <div>
+                                        <div style="font-weight: 500;">提前通知時間</div>
+                                        <div style="font-size: 13px; color: #666; margin-top: 3px;">餐前多久推送推薦</div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; color: #4CAF50; font-weight: 500; background-color: #f5f5f5; padding: 8px 15px; border-radius: 20px; cursor: pointer;">
+                                        <span>30分鐘</span>
+                                        <i class="fas fa-chevron-right" style="margin-left: 8px; font-size: 12px;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 搜尋範圍設定 (修改後) -->
+                            <div style="background-color: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                                <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">搜尋範圍設定</div>
+                                
+                                <div>
+                                    <div style="font-weight: 500; margin-bottom: 12px;">餐廳距離限制模式</div>
+                                    
+                                    <!-- 距離模式選擇按鈕群組 (新增智能選擇) -->
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;">
+                                        <!-- 智能選擇模式 -->
+                                        <div style="grid-column: span 3; text-align: center; padding: 10px 8px; border-radius: 10px; background-color: #4CAF50; color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(76,175,80,0.3); margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                            <i class="fas fa-magic" style="font-size: 20px; margin-bottom: 5px;"></i>
+                                            <div style="font-size: 14px; font-weight: 500;">智能選擇</div>
+                                            <div style="font-size: 11px; margin-top: 2px; opacity: 0.9;">根據時間、天氣及位置自動調整</div>
+                                        </div>
+                                        
+                                        <div style="text-align: center; padding: 12px 8px; border-radius: 10px; background-color: white; color: #666; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-ruler" style="font-size: 18px; margin-bottom: 5px;"></i>
+                                            <div style="font-size: 13px; font-weight: 500;">距離</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 12px 8px; border-radius: 10px; background-color: white; color: #666; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-walking" style="font-size: 18px; margin-bottom: 5px;"></i>
+                                            <div style="font-size: 13px; font-weight: 500;">走路</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 12px 8px; border-radius: 10px; background-color: white; color: #666; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-car" style="font-size: 18px; margin-bottom: 5px;"></i>
+                                            <div style="font-size: 13px; font-weight: 500;">開車</div>
+                                        </div>
+                                        <div style="text-align: center; padding: 12px 8px; border-radius: 10px; background-color: white; color: #666; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-motorcycle" style="font-size: 18px; margin-bottom: 5px;"></i>
+                                            <div style="font-size: 13px; font-weight: 500;">外送</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 智能選擇模式說明 -->
+                                    <div style="background-color: #e8f5e9; border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+                                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                            <i class="fas fa-lightbulb" style="color: #4CAF50; margin-top: 2px;"></i>
+                                            <div style="font-size: 13px; color: #333; line-height: 1.4;">
+                                                <span style="font-weight: 500;">智能選擇模式</span>會根據用餐時間、天氣狀況及您當前的位置，自動為您選擇最合適的餐廳距離。早餐及午餐時間會優先推薦較近的餐廳，晚餐時間範圍會適當擴大。
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 偏好考量 (移除料理類型偏好) -->
+                            <div style="background-color: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;">偏好考量</div>
+                                
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                        <span>考慮卡路里限制</span>
+                                        <div style="width: 50px; height: 28px; background-color: #4CAF50; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                            <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; right: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span>考慮預算限制</span>
+                                        <div style="width: 50px; height: 28px; background-color: #4CAF50; border-radius: 14px; position: relative; transition: all 0.3s; cursor: pointer;">
+                                            <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: white; top: 2px; right: 2px; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 儲存按鈕 -->
+                        <div style="padding: 15px; background-color: white; box-shadow: 0 -2px 5px rgba(0,0,0,0.1);">
+                            <button style="width: 100%; padding: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(76,175,80,0.3); cursor: pointer;">
+                                儲存設定
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加JavaScript代碼控制模式切換
+        document.addEventListener('DOMContentLoaded', function() {
+            // 獲取所有模式按鈕
+            const modeBtns = document.querySelectorAll('.travel-mode');
+            // 獲取所有模式輸入區塊
+            const modeInputs = document.querySelectorAll('.mode-input');
+            
+            // 為每個模式按鈕添加點擊事件
+            modeBtns.forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    // 移除所有模式按鈕的active類
+                    modeBtns.forEach(b => b.classList.remove('active'));
+                    // 隱藏所有模式輸入區塊
+                    modeInputs.forEach(input => input.classList.remove('active'));
+                    
+                    // 添加當前按鈕的active類
+                    this.classList.add('active');
+                    
+                    // 根據點擊的按鈕顯示對應的輸入區塊
+                    if (index === 0) { // 智能選擇
+                        document.getElementById('smart-input').classList.add('active');
+                    } else if (index === 1) { // 距離
+                        document.getElementById('distance-input').classList.add('active');
+                    } else if (index === 2) { // 走路
+                        document.getElementById('walking-input').classList.add('active');
+                    } else if (index === 3) { // 開車
+                        document.getElementById('driving-input').classList.add('active');
+                    } else if (index === 4) { // 外送
+                        document.getElementById('delivery-input').classList.add('active');
+                    }
+                });
+            });
+            
+            // 初始化滑塊數值顯示
+            const sliders = document.querySelectorAll('.custom-slider');
+            sliders.forEach(slider => {
+                const valueDisplay = slider.parentElement.querySelector('.slider-value');
+                if (valueDisplay) {
+                    slider.addEventListener('input', function() {
+                        let unit = slider.dataset.unit || '';
+                        valueDisplay.textContent = this.value + ' ' + unit;
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
